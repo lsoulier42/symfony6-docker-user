@@ -1,4 +1,4 @@
-FROM thecodingmachine/php:8.1-v4-fpm
+FROM thecodingmachine/php:8.2-v4-fpm
 
 ENV PHP_EXTENSION_PGSQL=1
 ENV PHP_EXTENSION_PDO_PGSQL=1
