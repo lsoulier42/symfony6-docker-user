@@ -11,7 +11,6 @@ DOCKER_COMPOSE_DEV = docker-compose
 install:
 	$(DOCKER_COMPOSE_DEV) build
 	$(MAKE) composer-install
-	$(MAKE) composer-update
 	$(MAKE) db-migrate
 	$(MAKE) db-fixtures
 	$(MAKE) node-install

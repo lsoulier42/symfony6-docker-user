@@ -1,18 +1,14 @@
-FROM thecodingmachine/php:8.2-v4-fpm
+FROM php:8.3-fpm
 
-ENV PHP_EXTENSION_PGSQL=1
-ENV PHP_EXTENSION_PDO_PGSQL=1
-ENV PHP_EXTENSION_APCU=1
-ENV PHP_EXTENSION_INTL=1
-ENV PHP_EXTENSION_GD=1
-ENV PHP_EXTENSION_PDO_MYSQL=0
-ENV PHP_INI_MEMORY_LIMIT=256M
-ENV PHP_INI_ERROR_REPORTING=1
-ENV PHP_INI_UPLOAD_MAX_FILESIZE=30M
-ENV PHP_INI_POST_MAX_SIZE=30M
-ENV TZ="Europe/Paris"
+RUN curl -sSLf \
+        -o /usr/local/bin/install-php-extensions \
+        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+    chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions xdebug pgsql pdo_pgsql intl zip
 
-RUN sudo apt-get update
+RUN apt-get update && apt-get install git -y
 
-RUN sudo apt-get clean \
-    && sudo rm -rf /var/lib/apt/lists/*
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+
+WORKDIR /var/www/html
