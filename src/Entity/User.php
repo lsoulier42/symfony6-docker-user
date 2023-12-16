@@ -16,43 +16,54 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[ORM\HasLifecycleCallbacks]
 class User extends AbstractEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Column(unique: true)]
-    #[NotBlank]
-    private string $username;
-
+    /**
+     * @var string $email
+     */
     #[ORM\Column(unique: true)]
     #[NotBlank]
     #[Email]
     private string $email;
 
+    /**
+     * @var array $roles
+     */
     #[ORM\Column]
     private array $roles = [];
 
+    /**
+     * @var string|null $password
+     */
     #[ORM\Column]
     private ?string $password = null;
 
+    /**
+     * @var string|null $plainPassword
+     */
     private ?string $plainPassword = null;
 
+    /**
+     * @var bool $enabled
+     */
     #[ORM\Column]
     private bool $enabled = true;
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
+    /**
+     * @var string|null $token
+     */
+    #[ORM\Column(nullable: true)]
+    private ?string $token = null;
 
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
+    /**
+     * @return string
+     */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return $this->getEmail();
     }
 
+    /**
+     * @return array|string[]
+     */
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -61,7 +72,11 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): static
+    /**
+     * @param array $roles
+     * @return $this
+     */
+    public function setRoles(array $roles): self
     {
         $rolesArray = [];
         foreach ($roles as $role) {
@@ -74,7 +89,11 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         return $this;
     }
 
-    public function addRole(UserRoleEnum $roleEnum): User
+    /**
+     * @param UserRoleEnum $roleEnum
+     * @return $this
+     */
+    public function addRole(UserRoleEnum $roleEnum): self
     {
         $roles = new ArrayCollection($this->roles);
         $newRoleName = $roleEnum->name;
@@ -85,7 +104,11 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         return $this;
     }
 
-    public function removeRole(UserRoleEnum $roleEnum): User
+    /**
+     * @param UserRoleEnum $roleEnum
+     * @return $this
+     */
+    public function removeRole(UserRoleEnum $roleEnum): self
     {
         $roles = new ArrayCollection($this->roles);
         $newRoleName = $roleEnum->name;
@@ -96,53 +119,101 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         return $this;
     }
 
-    public function getPassword(): string
+    /**
+     * @return string|null
+     */
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    /**
+     * @param string|null $password
+     * @return $this
+     */
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
+    /**
+     * @return void
+     */
     public function eraseCredentials(): void
     {
-        $this->plainPassword = null;
+        $this->setPlainPassword(null);
     }
 
+    /**
+     * @return string
+     */
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): User
+    /**
+     * @param string $email
+     * @return $this
+     */
+    public function setEmail(string $email): self
     {
         $this->email = $email;
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
 
-    public function setPlainPassword(?string $plainPassword): User
+    /**
+     * @param string|null $plainPassword
+     * @return $this
+     */
+    public function setPlainPassword(?string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): User
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string|null $token
+     * @return User
+     */
+    public function setToken(?string $token): User
+    {
+        $this->token = $token;
         return $this;
     }
 }

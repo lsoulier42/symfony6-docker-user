@@ -17,6 +17,10 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends AbstractRepository implements PasswordUpgraderInterface
 {
+    /**
+     * @param UserPasswordHasherInterface $userPasswordHasher
+     * @param ManagerRegistry $managerRegistry
+     */
     public function __construct(
         private readonly UserPasswordHasherInterface $userPasswordHasher,
         ManagerRegistry $managerRegistry
@@ -24,6 +28,11 @@ class UserRepository extends AbstractRepository implements PasswordUpgraderInter
         parent::__construct($managerRegistry, User::class);
     }
 
+    /**
+     * @param mixed $entity
+     * @param bool $flush
+     * @return void
+     */
     public function createOrUpdate(mixed $entity, bool $flush = true): void
     {
         $plainPassword = $entity->getPlainPassword();
@@ -35,6 +44,11 @@ class UserRepository extends AbstractRepository implements PasswordUpgraderInter
         parent::createOrUpdate($entity, $flush);
     }
 
+    /**
+     * @param PasswordAuthenticatedUserInterface $user
+     * @param string $newHashedPassword
+     * @return void
+     */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {

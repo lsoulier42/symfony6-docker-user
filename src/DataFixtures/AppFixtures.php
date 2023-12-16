@@ -2,43 +2,53 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\User;
+use App\Contract\Service\UserServiceInterface;
+use App\Dto\UserDto;
 use App\Enum\UserRoleEnum;
-use App\Repository\UserRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture
 {
+    /**
+     * @param string $adminPassword
+     * @param UserServiceInterface $userService
+     */
     public function __construct(
         private readonly string $adminPassword,
-        private readonly UserRepository $userRepository
+        private readonly UserServiceInterface $userService
     ) {
     }
 
+    /**
+     * @param ObjectManager $manager
+     * @return void
+     */
     public function load(ObjectManager $manager): void
     {
-        $this->loadUsers($manager);
+        $this->loadUsers();
         $manager->flush();
     }
 
-    public function loadUsers(ObjectManager $manager): void
+    /**
+     * @return void
+     */
+    public function loadUsers(): void
     {
-        $usersData = [[
-            'admin',
-            'admin@test.com',
-            $this->adminPassword,
-            UserRoleEnum::ROLE_ADMIN,
-            true
-        ]];
+        $usersData = [
+            (new UserDto())
+                ->setEmail('admin@test.com')
+                ->setPlainPassword($this->adminPassword)
+                ->setRole(UserRoleEnum::ROLE_ADMIN)
+                ->setEnabled(true),
+            (new UserDto())
+                ->setEmail('user@test.com')
+                ->setPlainPassword('test1234')
+                ->setRole(UserRoleEnum::ROLE_USER)
+                ->setEnabled(true)
+            ];
         foreach ($usersData as $userData) {
-            $user = new User();
-            $user->setUsername($userData[0])
-                ->setEmail($userData[1])
-                ->setPlainPassword($userData[2])
-                ->addRole($userData[3])
-                ->setEnabled($userData[4]);
-            $this->userRepository->createOrUpdate($user, false);
+            $this->userService->createUser($userData, false);
         }
     }
 }

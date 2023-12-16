@@ -16,6 +16,11 @@ abstract class AbstractRepository extends ServiceEntityRepository
         parent::__construct($registry, $className);
     }
 
+    /**
+     * @param mixed $entity
+     * @param bool $flush
+     * @return void
+     */
     public function createOrUpdate(mixed $entity, bool $flush = true): void
     {
         $entityManager = $this->getEntityManager();
@@ -27,6 +32,11 @@ abstract class AbstractRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @param mixed $entity
+     * @param bool $flush
+     * @return void
+     */
     public function remove(mixed $entity, bool $flush = true): void
     {
         $entityManager = $this->getEntityManager();

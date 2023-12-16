@@ -47,8 +47,8 @@ services:
     - "1280:1080"
 
   nodejs:
-    image: node:21-alpine3.19
+    build:
+      context: ./docker/node
     user: "${HOST_UID}:${HOST_GROUP_ID}"
-    working_dir: /app
     volumes:
       - ".:/app"
