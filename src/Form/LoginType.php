@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Dto\LoginDto;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,7 +17,10 @@ class LoginType extends AbstractUserType
     {
         $resolver->setDefaults(
             [
-                'data_class' => LoginDto::class
+                'data_class' => LoginDto::class,
+                'csrf_protection' => true,
+                'csrf_field_name' => '_csrf_token',
+                'csrf_token_id' => 'authenticate'
             ]
         );
     }
@@ -30,8 +33,12 @@ class LoginType extends AbstractUserType
         parent::buildForm($builder, $options);
         $builder
             ->add(
-                'csrfToken',
-                HiddenType::class
+                '_remember_me',
+                CheckboxType::class,
+                [
+                    'required' => false,
+                    'label' => 'global.label.remember_me'
+                ]
             )
             ->add(
                 'submit',
@@ -43,5 +50,13 @@ class LoginType extends AbstractUserType
                     ]
                 ]
             );
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlockPrefix(): string
+    {
+        return '';
     }
 }

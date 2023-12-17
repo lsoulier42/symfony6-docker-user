@@ -4,8 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Trait\Timestampable;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
 abstract class AbstractEntity
 {
@@ -15,18 +15,17 @@ abstract class AbstractEntity
      * @var int|null $id
      */
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     #[ORM\Column(nullable: false)]
     protected ?int $id = null;
 
     #[ORM\Column(type: UuidType::NAME, unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    protected ?string $uuid = null;
+    protected ?Uuid $uuid = null;
 
     public function __construct()
     {
         $this->setTimes();
+        $this->uuid = Uuid::v4();
     }
 
     /**
@@ -48,18 +47,18 @@ abstract class AbstractEntity
     }
 
     /**
-     * @return string|null
+     * @return Uuid|null
      */
-    public function getUuid(): ?string
+    public function getUuid(): ?Uuid
     {
         return $this->uuid;
     }
 
     /**
-     * @param string|null $uuid
+     * @param Uuid|null $uuid
      * @return $this
      */
-    public function setUuid(?string $uuid): self
+    public function setUuid(?Uuid $uuid): self
     {
         $this->uuid = $uuid;
         return $this;
