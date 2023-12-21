@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<p>
+    {{ 'validate_text'|trans }}
+
+    <a href="http://localhost:8222{{ path('app_validate_email', {'token': token}) }}">
+        {{ 'validate_link_text'|trans }}
+    </a>
+</p>
+{% endblock %}

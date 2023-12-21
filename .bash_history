@@ -23,3 +23,8 @@
 ./bin/console d:mi:mi
 ./bin/console d:fi:lo
 exit
+./bin/console me:con async
+exit
+./bin/console cache:clear
+./bin/console cache:clear
+exit

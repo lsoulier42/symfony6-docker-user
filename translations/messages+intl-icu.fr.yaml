@@ -1,0 +1,41 @@
+global:
+  app_name: Starter kit
+  title:
+    homepage: Accueil
+    login: Se connecter
+    register: S'enregistrer
+    admin: Panneau d'administration
+    logout: Se déconnecter
+  label:
+    email: Email
+    password: Mot de passe
+    confirm_password: Confirmer le mot de passe
+    remember_me: Se souvenir de moi
+    login: Se connecter
+    register: S'enregistrer
+    forgot_password: Mot de passe oublié ?
+    send: Envoyer
+    change_password: Ré-initialiser le mot de passe
+  form:
+    register:
+      error:
+        password: Les mots de passe ne correspondent pas
+  email:
+    validate_text: Votre lien d'activation d'email est
+    validate_link_text: Cliquez-ici
+  change_password:
+    email:
+      subject: Ré-initialisez votre mot de passe
+  register:
+    email:
+      subject: Validez votre compte
+  error:
+    register: Erreur pendant l'enregistrement
+    validate_email: Token invalide
+    forgot_password_request: Adresse e-mail invalide
+    change_password: Erreur pendant la ré-initialisation avec votre mot de passe
+  success:
+    register: Enregistrement effectué avec succès, veuillez valider votre adresse e-mail
+    validate_email: Adresse e-mail validée avec succès
+    forgot_password_request: Un e-mail a été envoyé pour ré-initialiser votre mot de passe
+    change_password: Votre mot de passe a été ré-initialisé avec succès

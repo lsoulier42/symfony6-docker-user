@@ -1,0 +1,11 @@
+{% if app.request.hasPreviousSession %}
+    <div class="messages">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}" role="alert">
+                    {{ message|trans }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -31,7 +31,10 @@ security:
 
 
     access_control:
-        - { path: (^/login), roles: PUBLIC_ACCESS }
+        - { path: ^/(login|register), roles: PUBLIC_ACCESS }
+        - { route: app_validate_email, roles: PUBLIC_ACCESS }
+        - { route: app_forgot_password_request, roles: PUBLIC_ACCESS }
+        - { route: app_change_password, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
 

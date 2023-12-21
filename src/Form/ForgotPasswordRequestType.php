@@ -2,16 +2,14 @@
 
 namespace App\Form;
 
-use App\Dto\LoginDto;
+use App\Dto\ForgotPasswordRequestDto;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class LoginType extends AbstractType
+class ForgotPasswordRequestType extends AbstractType
 {
     /**
      * @inheritDoc
@@ -20,10 +18,7 @@ class LoginType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => LoginDto::class,
-                'csrf_protection' => true,
-                'csrf_field_name' => '_csrf_token',
-                'csrf_token_id' => 'authenticate'
+                'data_class' => ForgotPasswordRequestDto::class
             ]
         );
     }
@@ -46,41 +41,24 @@ class LoginType extends AbstractType
                 ]
             )
             ->add(
-                'plainPassword',
-                PasswordType::class,
+                'email',
+                TextType::class,
                 [
-                    'required' => true,
                     'label' => false,
                     'attr' => [
-                        'placeholder' => 'global.label.password'
+                        'placeholder' => 'global.label.email'
                     ]
-                ]
-            )
-            ->add(
-                '_remember_me',
-                CheckboxType::class,
-                [
-                    'required' => false,
-                    'label' => 'global.label.remember_me'
                 ]
             )
             ->add(
                 'submit',
                 SubmitType::class,
                 [
-                    'label' => 'global.label.login',
+                    'label' => 'global.label.send',
                     'attr' => [
-                        'class' => 'form-control btn btn-success rounded submit px-3'
+                        'class' => 'form-control btn btn-primary rounded submit px-3'
                     ]
                 ]
             );
-    }
-
-    /**
-     * @return string
-     */
-    public function getBlockPrefix(): string
-    {
-        return '';
     }
 }

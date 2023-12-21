@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -58,5 +59,44 @@ class UserRepository extends AbstractRepository implements PasswordUpgraderInter
         $user->setPassword($newHashedPassword);
 
         $this->createOrUpdate($user);
+    }
+
+    /**
+     * @param string $token
+     * @return User|null
+     * @throws NonUniqueResultException
+     */
+    public function findOneByToken(
+        string $token
+    ): ?User {
+        $alias = self::USER_ALIAS;
+        $queryBuilder = $this->createQueryBuilder($alias);
+        self::addFieldAndWhere(
+            $queryBuilder,
+            $alias,
+            'token',
+            $token
+        );
+        return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @param string $email
+     * @return User|null
+     * @throws NonUniqueResultException
+     */
+    public function findOneByEmail(
+        string $email
+    ): ?User {
+        $email = strtolower(trim($email));
+        $alias = self::USER_ALIAS;
+        $queryBuilder = $this->createQueryBuilder($alias);
+        self::addFieldAndWhere(
+            $queryBuilder,
+            $alias,
+            'email',
+            $email
+        );
+        return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 }

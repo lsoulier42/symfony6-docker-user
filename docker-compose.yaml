@@ -43,7 +43,7 @@ services:
   mailer:
     image: schickling/mailcatcher
     ports:
-    - "1225:1025"
+    - "1025"
     - "1280:1080"
 
   nodejs:

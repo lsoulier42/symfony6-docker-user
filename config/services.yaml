@@ -1,12 +1,17 @@
 parameters:
+    locale: fr
     app_env: '%env(APP_ENV)%'
     app_version: '%env(APP_VERSION)%'
-    locale: fr
+    admin_password: '%env(ADMIN_PASSWORD)%'
+    default_from_email: '%env(DEFAULT_FROM_EMAIL)%'
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $defaultFromEmail: '%default_from_email%'
+            $adminPassword: '%admin_password%'
 
     App\:
         resource: '../src/'
@@ -14,6 +19,3 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-    App\DataFixtures\AppFixtures:
-        arguments:
-            $adminPassword: '%env(ADMIN_PASSWORD)%'
