@@ -2,6 +2,8 @@
 
 namespace App\Enum;
 
+use InvalidArgumentException;
+
 enum UserRoleEnum
 {
     case ROLE_USER;
@@ -35,5 +37,20 @@ enum UserRoleEnum
             }
         }
         return false;
+    }
+
+    /**
+     * @param string $role
+     * @return UserRoleEnum
+     */
+    public static function fromString(string $role): UserRoleEnum
+    {
+        $cases = self::cases();
+        foreach ($cases as $case) {
+            if ($role === $case->name) {
+                return $case;
+            }
+        }
+        throw new InvalidArgumentException("Role not found");
     }
 }

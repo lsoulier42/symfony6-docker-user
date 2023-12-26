@@ -6,6 +6,8 @@ global:
     register: S'enregistrer
     admin: Panneau d'administration
     logout: Se déconnecter
+    account: Mon compte
+    settings: Préférences
   label:
     email: Email
     password: Mot de passe
@@ -16,6 +18,17 @@ global:
     forgot_password: Mot de passe oublié ?
     send: Envoyer
     change_password: Ré-initialiser le mot de passe
+    edit: Editer
+    enabled: Activé
+    disabled: Désactivé
+    role: Role
+    confirm: Confirmer
+    actions: Actions
+    id: ID
+    status: Statut
+    delete: Supprimer
+    close: Fermer
+    edit_account: Editer mon compte
   form:
     register:
       error:
@@ -34,8 +47,26 @@ global:
     validate_email: Token invalide
     forgot_password_request: Adresse e-mail invalide
     change_password: Erreur pendant la ré-initialisation avec votre mot de passe
+    invalid_csrf: CSRF token invalide
   success:
     register: Enregistrement effectué avec succès, veuillez valider votre adresse e-mail
     validate_email: Adresse e-mail validée avec succès
     forgot_password_request: Un e-mail a été envoyé pour ré-initialiser votre mot de passe
     change_password: Votre mot de passe a été ré-initialisé avec succès
+admin:
+  user:
+    title:
+      edit: Editer un utilisateur
+      edit_user: Editer l'utilisateur
+      user_list: Liste des utilisateurs
+      index: Utilisateurs
+      delete: Supprimer un utilisateur
+    edit:
+      success: L'utilisateur a été édité avec succès
+    delete:
+      success: L'utilisateur a été supprimé avec succès
+      error:
+        admin: Vous ne pouvez pas supprimer un administrateur
+    modal:
+      delete:
+        text: Etes-vous sûr(e) de vouloir supprimer cet utilisateur ?

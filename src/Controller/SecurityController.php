@@ -3,30 +3,33 @@
 namespace App\Controller;
 
 use App\Contract\Service\UserServiceInterface;
-use App\Dto\ChangePasswordDto;
-use App\Dto\ForgotPasswordRequestDto;
-use App\Dto\LoginDto;
-use App\Dto\UserDto;
-use App\Form\ChangePasswordType;
-use App\Form\ForgotPasswordRequestType;
-use App\Form\LoginType;
-use App\Form\RegisterType;
+use App\Dto\User\ChangePasswordDto;
+use App\Dto\User\EditUserDto;
+use App\Dto\User\ForgotPasswordRequestDto;
+use App\Dto\User\LoginDto;
+use App\Dto\User\RegisterDto;
+use App\Entity\User;
+use App\Form\User\ChangePasswordType;
+use App\Form\User\EditUserType;
+use App\Form\User\ForgotPasswordRequestType;
+use App\Form\User\LoginType;
+use App\Form\User\RegisterType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Exception;
 use LogicException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class SecurityController extends AbstractController
+class SecurityController extends BaseController
 {
     /**
      * @return Response
@@ -59,12 +62,12 @@ class SecurityController extends AbstractController
         Request $request,
         UserServiceInterface $userService
     ): Response {
-        $dto = new UserDto();
+        $dto = new RegisterDto();
         $form = $this->createForm(RegisterType::class, $dto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $userService->registerUser($dto);
-            $this->addFlash('success', 'global.success.register');
+            $this->addSuccessMessage('global.success.register');
             return $this->redirectToRoute(
                 'homepage'
             );
@@ -96,10 +99,10 @@ class SecurityController extends AbstractController
             !Uuid::isValid($token)
             || ($user = $userRepository->findOneByToken($token)) === null
         ) {
-            $this->addFlash('danger', 'global.error.validate_email');
+            $this->addErrorMessage('global.error.validate_email');
             return $this->redirectToRoute('homepage');
         }
-        $this->addFlash('success', 'global.success.validate_email');
+        $this->addSuccessMessage('global.success.validate_email');
         $userService->enableUser($user);
         return $security->login($user, 'form_login', 'main');
     }
@@ -124,9 +127,9 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $userService->requestForgotPassword($dto);
-                $this->addFlash('success', 'global.success.forgot_password_request');
+                $this->addSuccessMessage('global.success.forgot_password_request');
             } catch (Exception $exception) {
-                $this->addFlash('danger', $exception->getMessage());
+                $this->addErrorMessage($exception->getMessage());
             }
             return $this->redirectToRoute('homepage');
         }
@@ -159,7 +162,7 @@ class SecurityController extends AbstractController
             !Uuid::isValid($token)
             || ($user = $userRepository->findOneByToken($token)) === null
         ) {
-            $this->addFlash('danger', 'global.error.change_password');
+            $this->addErrorMessage('global.error.change_password');
             return $this->redirectToRoute('homepage');
         }
         $dto = new ChangePasswordDto();
@@ -170,7 +173,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $userService->changePassword($user, $dto);
-            $this->addFlash('success', 'global.success.change_password');
+            $this->addSuccessMessage('global.success.change_password');
             return $security->login($user, 'form_login', 'main');
         }
         return $this->render(
@@ -189,6 +192,46 @@ class SecurityController extends AbstractController
     {
         throw new LogicException(
             'This method can be blank - it will be intercepted by the logout key on your firewall.'
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @param UserServiceInterface $userService
+     * @param Security $security
+     * @return Response
+     * @throws TransportExceptionInterface
+     */
+    #[Route(path: '/edit', name: 'user_edit')]
+    public function edit(
+        Request $request,
+        UserServiceInterface $userService,
+        Security $security
+    ): Response {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw new UnexpectedTypeException($user, User::class);
+        }
+        $dto = new EditUserDto($user);
+        $form = $this->createForm(EditUserType::class, $dto);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $message = $userService->editUserAccount($user, $dto);
+                $this->addSuccessMessage($message);
+                if (!$user->isAdmin()) {
+                    $security->logout();
+                }
+            } catch (Exception $exception) {
+                $this->addErrorMessage($exception->getMessage());
+            }
+            return $this->redirectToRoute('homepage');
+        }
+        return $this->render(
+            "security/edit.html.twig",
+            [
+                "form" => $form->createView()
+            ]
         );
     }
 }

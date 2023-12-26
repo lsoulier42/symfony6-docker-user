@@ -3,11 +3,15 @@
 namespace App\Service;
 
 use App\Contract\Service\UserServiceInterface;
-use App\Dto\ChangePasswordDto;
-use App\Dto\ForgotPasswordRequestDto;
-use App\Dto\UserDto;
+use App\Dto\User\AdminEditUserDto;
+use App\Dto\User\ChangePasswordDto;
+use App\Dto\User\EditUserDto;
+use App\Dto\User\ForgotPasswordRequestDto;
+use App\Dto\User\RegisterDto;
 use App\Entity\User;
+use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
+use LogicException;
 use RuntimeException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -40,24 +44,34 @@ readonly class UserService implements UserServiceInterface
     /**
      * @inheritDoc
      */
-    public function createUser(UserDto $dto, bool $flush = true): User
+    public function createUser(RegisterDto $dto, bool $flush = true): User
     {
         $user = new User();
-        self::hydrateUserFromDto($user, $dto);
+        $user->setEmail(self::cleanEmail($dto->getEmail()))
+            ->setPlainPassword($dto->getPlainPassword())
+            ->setEnabled(false)
+            ->setRoles([UserRoleEnum::defaultRole()]);
         $this->userRepository->createOrUpdate($user, $flush);
         return $user;
     }
 
     /**
+     * @param string $email
+     * @return string
+     */
+    public static function cleanEmail(string $email): string
+    {
+        return strtolower(trim($email));
+    }
+
+    /**
      * @param User $user
-     * @param UserDto $dto
+     * @param AdminEditUserDto $dto
      * @return void
      */
-    public static function hydrateUserFromDto(User $user, UserDto $dto): void
+    public static function hydrateUserFromAdminUserDto(User $user, AdminEditUserDto $dto): void
     {
-        $dto->setEmail(strtolower(trim($dto->getEmail())));
-        $user->setEmail($dto->getEmail())
-            ->setPlainPassword($dto->getPlainPassword())
+        $user->setEmail(self::cleanEmail($dto->getEmail()))
             ->addRole($dto->getRole())
             ->setEnabled($dto->isEnabled());
     }
@@ -65,7 +79,7 @@ readonly class UserService implements UserServiceInterface
     /**
      * @inheritDoc
      */
-    public function registerUser(UserDto $dto, bool $flush = true): User
+    public function registerUser(RegisterDto $dto, bool $flush = true): User
     {
         $user = $this->createUser($dto, false);
         $token = $this->generateUserToken($user, $flush);
@@ -83,10 +97,10 @@ readonly class UserService implements UserServiceInterface
      */
     public function updateUser(
         User $user,
-        UserDto $dto,
+        AdminEditUserDto $dto,
         bool $flush = true
     ): User {
-        self::hydrateUserFromDto($user, $dto);
+        self::hydrateUserFromAdminUserDto($user, $dto);
         $this->userRepository->createOrUpdate($user, $flush);
         return $user;
     }
@@ -174,10 +188,7 @@ readonly class UserService implements UserServiceInterface
     }
 
     /**
-     * @param User $user
-     * @param ChangePasswordDto $dto
-     * @param bool $flush
-     * @return void
+     * @inheritDoc
      */
     public function changePassword(
         User $user,
@@ -187,5 +198,46 @@ readonly class UserService implements UserServiceInterface
         $user->setPlainPassword($dto->getPlainPassword());
         $user->setToken(null);
         $this->userRepository->createOrUpdate($user, $flush);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteUser(
+        User $user,
+        bool $flush = true
+    ): void {
+        if (!$user->isAdmin()) {
+            $this->userRepository->remove($user, $flush);
+            return;
+        }
+        throw new LogicException("admin.user.delete.error.admin");
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function editUserAccount(
+        User $user,
+        EditUserDto $dto,
+        bool $flush = true
+    ): string {
+        $newEmail = self::cleanEmail($dto->getEmail());
+        $oldEmail = $user->getEmail();
+        $user->setEmail($newEmail);
+        $message = "global.user.edit.success";
+        if ($oldEmail !== $newEmail && !$user->isAdmin()) {
+            $newToken = $this->generateUserToken($user, false);
+            $user->setEnabled(false);
+            $this->sendMailToken(
+                $user,
+                'security/validate_email.html.twig',
+                'global.user.edit.validate_email_success',
+                $newToken
+            );
+            $message = "global.user.edit.success_validate_email";
+        }
+        $this->userRepository->createOrUpdate($user, $flush);
+        return $message;
     }
 }

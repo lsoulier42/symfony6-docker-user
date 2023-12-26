@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User;
 
-use App\Dto\ChangePasswordDto;
+use App\Dto\User\ChangePasswordDto;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

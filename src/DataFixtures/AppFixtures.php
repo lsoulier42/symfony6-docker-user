@@ -3,7 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Contract\Service\UserServiceInterface;
-use App\Dto\UserDto;
+use App\Dto\User\RegisterDto;
 use App\Enum\UserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -36,12 +36,12 @@ class AppFixtures extends Fixture
     public function loadUsers(): void
     {
         $usersData = [
-            (new UserDto())
+            (new RegisterDto())
                 ->setEmail('admin@test.com')
                 ->setPlainPassword($this->adminPassword)
                 ->setRole(UserRoleEnum::ROLE_ADMIN)
                 ->setEnabled(true),
-            (new UserDto())
+            (new RegisterDto())
                 ->setEmail('user@test.com')
                 ->setPlainPassword('test1234')
                 ->setRole(UserRoleEnum::ROLE_USER)

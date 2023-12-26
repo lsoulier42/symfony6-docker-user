@@ -13,15 +13,26 @@
                 {
                     'text': 'global.title.admin'|trans,
                     'path': '#',
-                    'icon': 'fa fa-shield',
-                    'subMenu': []
+                    'icon': 'fa fa-shield me-1',
+                    'subMenu': [
+                        {'text': 'admin.user.title.index'|trans, 'path': path('admin_user_index') }
+                    ]
                 },
             ]
         ) %}
     {% endif %}
     {% if is_granted('ROLE_USER')  %}
         {% set links = links|merge(
-            []
+            [
+                {
+                    'text': 'global.title.account'|trans,
+                    'path': '#',
+                    'icon': 'fa fa-shield me-1',
+                    'subMenu': [
+                        {'text': 'global.title.settings'|trans, 'path': path('user_edit') }
+                    ]
+                },
+            ]
         ) %}
     {% endif %}
     {% set links = links|merge(

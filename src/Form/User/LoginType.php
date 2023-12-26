@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\User;
 
-use App\Dto\UserDto;
+use App\Dto\User\LoginDto;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RegisterType extends AbstractType
+class LoginType extends AbstractType
 {
     /**
      * @inheritDoc
@@ -20,15 +20,16 @@ class RegisterType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => UserDto::class
+                'data_class' => LoginDto::class,
+                'csrf_protection' => true,
+                'csrf_field_name' => '_csrf_token',
+                'csrf_token_id' => 'authenticate'
             ]
         );
     }
 
     /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     * @return void
+     * @inheritDoc
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -46,36 +47,40 @@ class RegisterType extends AbstractType
             )
             ->add(
                 'plainPassword',
-                RepeatedType::class,
+                PasswordType::class,
                 [
-                    'type' => PasswordType::class,
-                    'invalid_message' => 'global.form.register.error.password',
                     'required' => true,
-                    'first_options' =>
-                        [
-                            'label' => false,
-                            'attr' => [
-                                'placeholder' => 'global.label.password'
-                            ]
-                        ],
-                    'second_options' =>
-                        [
-                            'label' => false,
-                            'attr' => [
-                                'placeholder' => 'global.label.confirm_password'
-                            ]
-                        ],
+                    'label' => false,
+                    'attr' => [
+                        'placeholder' => 'global.label.password'
+                    ]
+                ]
+            )
+            ->add(
+                '_remember_me',
+                CheckboxType::class,
+                [
+                    'required' => false,
+                    'label' => 'global.label.remember_me'
                 ]
             )
             ->add(
                 'submit',
                 SubmitType::class,
                 [
-                    'label' => 'global.label.register',
+                    'label' => 'global.label.login',
                     'attr' => [
-                        'class' => 'form-control btn btn-primary rounded submit px-3'
+                        'class' => 'form-control btn btn-success rounded submit px-3'
                     ]
                 ]
             );
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlockPrefix(): string
+    {
+        return '';
     }
 }

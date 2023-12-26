@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'admin.user.title.index'|trans }}{% endblock %}
+
+{% block main_content %}
+    <h3 class="mb-4">{{ 'admin.user.title.user_list'|trans }}</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>{{ "global.label.id"|trans }}</th>
+            <th>{{ "global.label.email"|trans }}</th>
+            <th>{{ "global.label.role"|trans }}</th>
+            <th>{{ "global.label.status"|trans }}</th>
+            <th class="text-center">{{ "global.label.actions"|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.mainRole }}</td>
+            <td>
+                {% set label_class = user.enabled ? 'success' : 'warning' %}
+                {% set label_text = user.enabled ? 'enabled' : 'disabled' %}
+                <span class="badge bg-{{ label_class }}">{{ ('global.label.' ~ label_text)|trans }}</span>
+            </td>
+            <td class="text-center">
+                <a href="{{ path('admin_user_edit', {'user': user.id}) }}" class="btn btn-primary">
+                    {{ "global.label.edit"|trans }}
+                </a>
+                {% if user.isAdmin == false %}
+                    <a href="{{ path('admin_user_delete', {'user': user.id}) }}" class="btn btn-danger"
+                       data-bs-toggle="modal" data-bs-target="#delete-user-{{ user.id }}">
+                        {{ "global.label.delete"|trans }}
+                    </a>
+                    {% include "layout/_modal_delete.html.twig" with {
+                        "id": "delete-user-" ~ user.id,
+                        "title": "admin.user.title.delete"|trans,
+                        "text": "admin.user.modal.delete.text"|trans,
+                        "path": path('admin_user_delete',{"csrf_token": csrf_token("delete-user"), "user": user.id})
+                    }
+                    %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ pagerfanta(users) }}
+{% endblock %}

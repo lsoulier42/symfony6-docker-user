@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Dto;
+namespace App\Dto\User;
 
+use App\Entity\User;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ForgotPasswordRequestDto
+class EditUserDto
 {
     /**
      * @var string $email
@@ -13,6 +14,15 @@ class ForgotPasswordRequestDto
     #[NotBlank]
     #[Email]
     private string $email;
+
+    /**
+     * @param User $user
+     */
+    public function __construct(
+        User $user
+    ) {
+        $this->email = $user->getEmail();
+    }
 
     /**
      * @return string
@@ -24,9 +34,9 @@ class ForgotPasswordRequestDto
 
     /**
      * @param string $email
-     * @return ForgotPasswordRequestDto
+     * @return EditUserDto
      */
-    public function setEmail(string $email): ForgotPasswordRequestDto
+    public function setEmail(string $email): EditUserDto
     {
         $this->email = $email;
         return $this;

@@ -73,6 +73,36 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     }
 
     /**
+     * @return UserRoleEnum
+     */
+    public function getMainRoleEnum(): UserRoleEnum
+    {
+        $roles = $this->getRoles();
+        foreach ($roles as $role) {
+            if ($role !== UserRoleEnum::defaultRole()) {
+                return UserRoleEnum::fromString($role);
+            }
+        }
+        return UserRoleEnum::defaultRoleEnum();
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainRole(): string
+    {
+        return $this->getMainRoleEnum()->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return in_array(UserRoleEnum::ROLE_ADMIN->name, $this->getRoles(), true);
+    }
+
+    /**
      * @param array $roles
      * @return $this
      */

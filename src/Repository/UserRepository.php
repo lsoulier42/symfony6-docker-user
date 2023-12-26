@@ -2,9 +2,12 @@
 
 namespace App\Repository;
 
+use App\Dto\PaginationDto;
 use App\Entity\User;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -98,5 +101,19 @@ class UserRepository extends AbstractRepository implements PasswordUpgraderInter
             $email
         );
         return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return Pagerfanta<User>
+     */
+    public function findAllPaginated(PaginationDto $dto): Pagerfanta
+    {
+        $alias = self::USER_ALIAS;
+        $queryBuilder = $this->createQueryBuilder($alias);
+        $adapter = new QueryAdapter($queryBuilder);
+        $pagerFanta = new Pagerfanta($adapter);
+        $pagerFanta->setMaxPerPage($dto->getLimit())
+            ->setCurrentPage($dto->getPage());
+        return $pagerFanta;
     }
 }

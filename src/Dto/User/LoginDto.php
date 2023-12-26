@@ -1,24 +1,29 @@
 <?php
 
-namespace App\Dto;
+namespace App\Dto\User;
 
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-abstract class AbstractUserDto
+class LoginDto
 {
     /**
      * @var string $email
      */
     #[NotBlank]
     #[Email]
-    protected string $email;
+    private string $email;
 
     /**
      * @var string $plainPassword
      */
     #[NotBlank]
-    protected string $plainPassword;
+    private string $plainPassword;
+
+    /**
+     * @var bool $rememberMe
+     */
+    private bool $rememberMe = false;
 
     /**
      * @return string
@@ -30,9 +35,9 @@ abstract class AbstractUserDto
 
     /**
      * @param string $email
-     * @return $this
+     * @return LoginDto
      */
-    public function setEmail(string $email): self
+    public function setEmail(string $email): LoginDto
     {
         $this->email = $email;
         return $this;
@@ -48,11 +53,29 @@ abstract class AbstractUserDto
 
     /**
      * @param string $plainPassword
-     * @return $this
+     * @return LoginDto
      */
-    public function setPlainPassword(string $plainPassword): self
+    public function setPlainPassword(string $plainPassword): LoginDto
     {
         $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRememberMe(): bool
+    {
+        return $this->rememberMe;
+    }
+
+    /**
+     * @param bool $rememberMe
+     * @return LoginDto
+     */
+    public function setRememberMe(bool $rememberMe): LoginDto
+    {
+        $this->rememberMe = $rememberMe;
         return $this;
     }
 }

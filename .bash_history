@@ -28,3 +28,6 @@ exit
 ./bin/console cache:clear
 ./bin/console cache:clear
 exit
+./bin/composer require babdev/pagerfanta-bundle
+./bin/composer require pagerfanta/pagerfanta
+exit
