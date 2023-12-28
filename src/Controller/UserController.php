@@ -9,6 +9,7 @@ use App\Dto\User\ForgotPasswordRequestDto;
 use App\Dto\User\LoginDto;
 use App\Dto\User\RegisterDto;
 use App\Entity\User;
+use App\Enum\UserRoleEnum;
 use App\Form\User\ChangePasswordType;
 use App\Form\User\EditUserType;
 use App\Form\User\ForgotPasswordRequestType;
@@ -23,22 +24,31 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class SecurityController extends BaseController
+#[Route(path: '/user')]
+#[IsGranted("PUBLIC_ACCESS")]
+class UserController extends AbstractBaseController
 {
     /**
+     * @param AuthenticationUtils $utils
      * @return Response
      */
-    #[Route(path: '/login', name: 'app_login')]
-    public function login(): Response
+    #[Route(path: '/login', name: 'user_login')]
+    public function login(AuthenticationUtils $utils): Response
     {
         $dto = new LoginDto();
         $form = $this->createForm(LoginType::class, $dto);
+        $error = $utils->getLastAuthenticationError();
+        if ($error !== null) {
+            $this->addErrorMessage($error->getMessageKey());
+        }
 
         return $this->render(
             'security/login.html.twig',
@@ -57,7 +67,7 @@ class SecurityController extends BaseController
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    #[Route(path: '/register', name: 'app_register')]
+    #[Route(path: '/register', name: 'user_register')]
     public function register(
         Request $request,
         UserServiceInterface $userService
@@ -88,7 +98,7 @@ class SecurityController extends BaseController
      * @return Response
      * @throws NonUniqueResultException
      */
-    #[Route(path: '/validate-email/{token}', name: 'app_validate_email')]
+    #[Route(path: '/validate-email/{token}', name: 'user_validate_email')]
     public function validateEmail(
         string $token,
         UserRepository $userRepository,
@@ -113,7 +123,7 @@ class SecurityController extends BaseController
      * @return Response
      * @throws TransportExceptionInterface
      */
-    #[Route(path: '/forgot-password-request', name: 'app_forgot_password_request')]
+    #[Route(path: '/forgot-password-request', name: 'user_forgot_password_request')]
     public function forgotPasswordRequest(
         Request $request,
         UserServiceInterface $userService
@@ -150,7 +160,7 @@ class SecurityController extends BaseController
      * @return Response
      * @throws NonUniqueResultException
      */
-    #[Route(path: '/change-password/{token}', name: 'app_change_password')]
+    #[Route(path: '/change-password/{token}', name: 'user_change_password')]
     public function changePassword(
         Request $request,
         string $token,
@@ -187,7 +197,8 @@ class SecurityController extends BaseController
     /**
      * @return void
      */
-    #[Route(path: '/logout', name: 'app_logout')]
+    #[IsGranted(UserRoleEnum::ROLE_USER->name)]
+    #[Route(path: '/logout', name: 'user_logout')]
     public function logout(): void
     {
         throw new LogicException(
@@ -202,6 +213,7 @@ class SecurityController extends BaseController
      * @return Response
      * @throws TransportExceptionInterface
      */
+    #[IsGranted(UserRoleEnum::ROLE_USER->name)]
     #[Route(path: '/edit', name: 'user_edit')]
     public function edit(
         Request $request,
@@ -220,7 +232,7 @@ class SecurityController extends BaseController
                 $message = $userService->editUserAccount($user, $dto);
                 $this->addSuccessMessage($message);
                 if (!$user->isAdmin()) {
-                    $security->logout();
+                    $security->logout(false);
                 }
             } catch (Exception $exception) {
                 $this->addErrorMessage($exception->getMessage());

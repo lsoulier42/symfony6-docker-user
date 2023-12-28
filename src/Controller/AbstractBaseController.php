@@ -6,7 +6,7 @@ use App\Dto\PaginationDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-class BaseController extends AbstractController
+abstract class AbstractBaseController extends AbstractController
 {
     /**
      * @param Request $request

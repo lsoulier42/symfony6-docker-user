@@ -3,9 +3,10 @@
 namespace App\Controller\Admin;
 
 use App\Contract\Service\UserServiceInterface;
-use App\Controller\BaseController;
+use App\Controller\AbstractBaseController;
 use App\Dto\User\AdminEditUserDto;
 use App\Entity\User;
+use App\Enum\UserRoleEnum;
 use App\Form\User\AdminEditUserType;
 use App\Repository\UserRepository;
 use Exception;
@@ -17,9 +18,9 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted("ROLE_ADMIN")]
+#[IsGranted(UserRoleEnum::ROLE_ADMIN->name)]
 #[Route(path: '/admin_user')]
-class AdminUserController extends BaseController
+class AdminUserController extends AbstractBaseController
 {
     /**
      * @param Request $request

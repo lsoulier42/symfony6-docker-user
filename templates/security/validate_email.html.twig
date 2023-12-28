@@ -2,10 +2,10 @@
 
 {% block body %}
 <p>
-    {{ 'validate_text'|trans }}
-
-    <a href="http://localhost:8222{{ path('app_validate_email', {'token': token}) }}">
-        {{ 'validate_link_text'|trans }}
+    {{ 'global.email.validate_text'|trans }}
+    {% set link = "http://localhost:8222" ~ path('user_validate_email', {'token': token}) %}
+    <a href={{ link }}>
+        {{ link }}
     </a>
 </p>
 {% endblock %}

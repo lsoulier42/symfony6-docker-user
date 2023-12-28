@@ -13,29 +13,23 @@ use App\Enum\UserRoleEnum;
 use App\Repository\UserRepository;
 use LogicException;
 use RuntimeException;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 readonly class UserService implements UserServiceInterface
 {
     /**
      * @param UserRepository $userRepository
      * @param MailerInterface $mailer
-     * @param Environment $environment
      * @param TranslatorInterface $translator
      * @param string $defaultFromEmail
      */
     public function __construct(
         private UserRepository $userRepository,
         private MailerInterface $mailer,
-        private Environment $environment,
         private TranslatorInterface $translator,
         private string $defaultFromEmail
     ) {
@@ -157,9 +151,6 @@ readonly class UserService implements UserServiceInterface
      * @param string $subjectTransKey
      * @param string $token
      * @return void
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      * @throws TransportExceptionInterface
      */
     private function sendMailToken(
@@ -168,22 +159,17 @@ readonly class UserService implements UserServiceInterface
         string $subjectTransKey,
         string $token
     ): void {
-
-        $html = $this->environment
-            ->render(
-                $template,
-                [
-                    'token' => $token
-                ]
-            );
         $subject = $this->translator
             ->trans($subjectTransKey);
-        $email = new Email();
+        $email = new TemplatedEmail();
         $email
             ->from($this->defaultFromEmail)
             ->to($user->getEmail())
             ->subject($subject)
-            ->html($html);
+            ->htmlTemplate($template)
+            ->context([
+                'token' => $token
+            ]);
         $this->mailer->send($email);
     }
 

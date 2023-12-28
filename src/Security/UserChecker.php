@@ -19,7 +19,7 @@ class UserChecker implements UserCheckerInterface
             return;
         }
         if ($user->isEnabled() === false) {
-            throw new CustomUserMessageAuthenticationException("Account not enabled");
+            throw new CustomUserMessageAuthenticationException("global.error.account_not_enabled");
         }
     }
 

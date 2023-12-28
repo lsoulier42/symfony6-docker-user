@@ -1,3 +1,4 @@
+Invalid credentials.: Identifiant ou mot de passe invalide
 global:
   app_name: Starter kit
   title:
@@ -35,7 +36,7 @@ global:
         password: Les mots de passe ne correspondent pas
   email:
     validate_text: Votre lien d'activation d'email est
-    validate_link_text: Cliquez-ici
+    change_password_text: Votre lien pour changer de mot de passe est
   change_password:
     email:
       subject: Ré-initialisez votre mot de passe
@@ -48,11 +49,15 @@ global:
     forgot_password_request: Adresse e-mail invalide
     change_password: Erreur pendant la ré-initialisation avec votre mot de passe
     invalid_csrf: CSRF token invalide
+    account_not_enabled: Votre adresse e-mail n'a pas encore été validée
   success:
     register: Enregistrement effectué avec succès, veuillez valider votre adresse e-mail
     validate_email: Adresse e-mail validée avec succès
     forgot_password_request: Un e-mail a été envoyé pour ré-initialiser votre mot de passe
     change_password: Votre mot de passe a été ré-initialisé avec succès
+  user:
+    edit:
+      validate_email_success: Validez votre adresse e-mail
 admin:
   user:
     title:
