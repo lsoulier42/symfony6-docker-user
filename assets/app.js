@@ -1,14 +1,12 @@
-var $ = require('jquery');
-global.$ = global.jQuery = $;
-window.$ = window.jQuery = $
-require('bootstrap/dist/js/bootstrap.bundle');
+import './bootstrap.js';
+/*
+ * Welcome to your app's main JavaScript file!
+ *
+ * This file will be included onto the page via the importmap() Twig function,
+ * which should already be in your base.html.twig.
+ */
 
-import './styles/app.scss';
-
-// start the Stimulus application
-import './bootstrap';
-
-var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-})
+import 'bootstrap'
+import './styles/app.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './styles/fontawesome/css/font-awesome.min.css'

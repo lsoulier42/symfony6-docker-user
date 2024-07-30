@@ -3,6 +3,7 @@
 
 .php-version
 .composer
+.bash_history
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -15,12 +16,6 @@
 !/var/.gitkeep
 /vendor/
 ###< symfony/framework-bundle ###
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
-
 .idea
 /docker/db/postgresql/
 !/docker/db/.gitkeep
@@ -35,3 +30,18 @@ yarn-error.log
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

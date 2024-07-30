@@ -1,6 +1,6 @@
 FROM php:8.3-fpm
 
-RUN apt-get update && apt-get install -y git zip wget curl unzip vim gnupg supervisor
+RUN apt-get update && apt-get install -y git zip wget curl unzip vim supervisor systemd sudo
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -8,19 +8,19 @@ RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions xdebug pgsql pdo pdo_pgsql intl zip apcu mbstring opcache sodium
-RUN install-php-extensions gd
+    install-php-extensions xdebug pgsql pdo pdo_pgsql intl zip apcu mbstring sodium
 
 ENV USER=docker
-ENV HOME=/var/www/html
+ENV HOME=/home/$USER
+ENV WORKDIR=/var/www/html
 RUN useradd -ms /bin/bash $USER && adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN mkdir -p $HOME && chown $USER:$USER $HOME
-WORKDIR $HOME
+WORKDIR $WORKDIR
 
 COPY ./messenger-workers.conf /etc/supervisor/conf.d/messenger-workers.conf
-COPY ./run_php.sh /home/docker/run_php.sh
-RUN chown docker:docker /home/docker/run_php.sh && chmod 777 /home/docker/run_php.sh
+COPY ./run_php.sh $HOME/run_php.sh
+RUN chown docker:docker $HOME/run_php.sh && chmod 777 $HOME/run_php.sh
 
 USER $USER
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
