@@ -6,7 +6,7 @@ export HOST_UID
 export HOST_USER
 export HOST_GROUP_ID
 
-DOCKER_COMPOSE_DEV = docker-compose
+DOCKER_COMPOSE_DEV = docker compose
 
 install:
 	$(DOCKER_COMPOSE_DEV) build
